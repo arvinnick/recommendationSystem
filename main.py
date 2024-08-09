@@ -20,7 +20,9 @@ async def generator(model_name):
     random_number = randint(1, 100)
     return {"reason": model_name, "result": random_number}
 
-
+@app.get("/cascade-test")
+async def runcascade(model_name):
+    return await asyncio.gather(*[generator(model_name) for _ in range(5)])
 
 
 
