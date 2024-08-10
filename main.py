@@ -1,24 +1,19 @@
-import asyncio, random, redis
-import json
-
+import asyncio, random, redis, json
+from cachetools import TTLCache
 from fastapi import FastAPI
 from random import randint
 
-from pydantic import BaseModel
-
 app = FastAPI()
-model_names = ["peerius", "strands", "parallel_dots",
-               "sajari", "recombee", "watson", "rumo",
-               "froomble"]
+recommender_model_names = ["peerius", "strands", "parallel_dots",
+                           "sajari", "recombee", "watson", "rumo",
+                           "froomble"]
 redis_cache = redis.Redis()
+local_cache = TTLCache(maxsize=3, ttl=10)
 
 
-class ModelName(BaseModel):
-    model_name: str
 
-
-@app.post("/generator")
-async def generator(model_name: ModelName):
+@app.post("/generator/{model_name}")
+async def generator(model_name):
     """
     The service that generates recommendations
     :param model_name: recommender model name
@@ -33,19 +28,23 @@ async def runcascade():
     """
     generates 5 random number with different model names
     """
-    res = list(await asyncio.gather(*[generator(model_name) for model_name in random.choices(model_names, k=5)]))
+    model_names_list = [generator(model_name) for model_name in random.choices(recommender_model_names, k=5)]
+    res = list(await asyncio.gather(*model_names_list))
     return res
 
 
+@app.get("/generator/{viewerid}")
 async def recommend(viewerid):
     """
     recommender function that gives a random recommendation for the viewer id, or read it from the cache
     """
-    cache = redis_cache.get(viewerid)
-    #check the cache for the giver user
-    if cache:
-        res = json.loads(await cache)
+    if viewerid in local_cache:
+        return local_cache[viewerid]
     else:
-        res = await runcascade()
-        await redis_cache.set(viewerid, str(res))
-    return res
+        cached_item = redis_cache.get(viewerid)
+        if cached_item:
+            return eval(await cached_item)
+        else:
+            res = await runcascade()
+            await redis_cache.set(viewerid, str(res))
+            return res
