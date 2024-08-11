@@ -1,4 +1,5 @@
 import asyncio
+import os
 import random
 import redis
 import json
@@ -11,7 +12,9 @@ recommender_model_names = [
     "peerius", "strands", "parallel_dots", "sajari",
     "recombee", "watson", "rumo", "froomble"
 ]
-redis_cache = redis.Redis()
+redis_host = os.getenv("REDIS_HOST", "localhost")
+redis_port = int(os.getenv("REDIS_PORT", 6379))
+redis_cache = redis.Redis(host=redis_host, port=redis_port)
 local_cache = TTLCache(maxsize=3, ttl=10)
 
 
