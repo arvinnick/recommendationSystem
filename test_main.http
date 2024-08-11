@@ -1,11 +1,9 @@
-# Test your FastAPI endpoints
+#Tests
 
-GET http://127.0.0.1:8000/
+
+POST http://127.0.0.1:8000/generator/watson
 Accept: application/json
 
 ###
-
-GET http://127.0.0.1:8000/hello/User
+GET http://localhost:8000/recommend/12
 Accept: application/json
-
-###

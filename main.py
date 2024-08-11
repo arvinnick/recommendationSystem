@@ -36,7 +36,7 @@ async def runcascade():
     return res
 
 
-@app.get("/generator/{viewerid}")
+@app.get("/recommend/{viewerid}")
 async def recommend(viewerid: str):
     """
     Recommender function that gives a random recommendation for the viewer ID,
@@ -54,7 +54,7 @@ async def recommend(viewerid: str):
         else:
             res = await runcascade()
             # Store in Redis as a JSON string
-            await redis_cache.set(viewerid, json.dumps(res))
+            redis_cache.set(viewerid, json.dumps(res))
 
         # Store in the local cache
         local_cache[viewerid] = res
