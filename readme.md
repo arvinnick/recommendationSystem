@@ -12,9 +12,11 @@ models.</p>
 docker-compose build
 
 # Start the containers
-docker-compose up
+docker-compose up --build
+
 ```
-<p>And you will have your server running.</p>
+<p>And you will have your server running.<br>
+To Access it, use the link http://localhost:8000. </p>
 <h2>endpoints</h2>
 
 | Endpoint               | description                                                                                | methods     | parameters |
@@ -25,6 +27,6 @@ docker-compose up
 
 <h2>requirements</h2>
 
-<p>You need Docker to run this repo. Refer to the Docker documentation.</p>
+<p>You need Docker and docker-compose to run this repo. Refer to the Docker documentation.<br>Also, make sure you have the docker service running on your machine and you have the privileges to run the docker-compose utility.</p>
 
 
